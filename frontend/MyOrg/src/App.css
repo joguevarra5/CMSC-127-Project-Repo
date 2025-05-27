@@ -11,3 +11,13 @@ button:hover {
 button:active {
     transform: scale(0.97);
 }
+
+#orgTile {
+    transition: transform 0.2s ease;
+}
+
+#orgTile:hover {
+    cursor: pointer;
+    transform: translateY(-4px);
+    transform: scale(1.03);
+}
