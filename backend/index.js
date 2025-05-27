@@ -63,13 +63,34 @@ export async function getMembersByOrgName(orgName) {
     return result;
 }
 
-export async function addOrgMember(org_id, student_id, join_date, status, position, assignment_date, committee) {
-    await pool.query(
-        `INSERT INTO org_mem (org_id, student_id, join_date, status, position, assignment_date, committee)
-        VALUES (4, '202327501', '2023-10-27', 'Inactive', NULL, NULL, 'Internals');`
-        , [org_id, student_id, join_date, status, position, assignment_date, committee]
-    );
+export async function addMember(member) {
+    const {
+        org_name,
+        student_id,
+        position,
+        status,
+        gender,
+        degprog,
+        join_date,
+        committee,
+    } = member;
+
+    const [org] = await pool.query(`SELECT org_id FROM org WHERE org_name = ?`, [org_name]);
+    if (org.length === 0) throw new Error("Organization not found");
+
+    const org_id = org[0].org_id;
+
+    await pool.query(`
+        INSERT INTO student (student_id, gender, degprog)
+        VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE gender = VALUES(gender), degprog = VALUES(degprog)
+    `, [student_id, gender, degprog]);
+
+    await pool.query(`
+        INSERT INTO org_mem (student_id, org_id, position, status, join_date, committee)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `, [student_id, org_id, position, status, join_date, committee]);
 }
+
 
 // TODO: addMember, editMember, deleteMember
 

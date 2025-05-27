@@ -49,6 +49,23 @@ function Main() {
             <div className="bg-white w-full min-h-[625px] rounded-2xl shadow-lg p-6">
                 <p className="text-4xl font-bold"> Manage Database </p>
 
+                {/* options */}
+                <div className="flex items-center justify-between p-4">
+                    <div className="flex items-center space-x-4">
+                        <p className="text-2xl">Reports:</p>
+                        <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
+                            View Members
+                        </button>
+                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
+                            View Fees
+                        </button>
+                    </div>
+
+                    <div>
+                        <p className="text-2xl font-medium">Filter</p>
+                    </div>
+                </div>
+
                 <div>
                     {/* table display */}
                     <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
@@ -61,6 +78,16 @@ function Main() {
                             sx={{ border: 0 }}
                         />
                     </Paper>
+                </div>
+
+                <div className="flex items-center justify-end mt-8">
+                    <button className="bg-[#a594f9] h-10 w-37 rounded-[25px] text-white mr-10">
+                        Add Member
+                    </button>
+
+                    <button className="bg-[#a594f9] h-10 w-37 rounded-[25px] text-white">
+                        Delete Member
+                    </button>
                 </div>
             </div>
         </div>

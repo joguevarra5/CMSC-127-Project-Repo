@@ -59,6 +59,18 @@ app.get("/members/by-org", async (req, res) => {
     }
 });
 
+app.post('/member-add', async (req, res) => {
+    try {
+        const member = req.body;
+        await orgService.addMember(member);
+        res.status(201).send({ message: 'Member added successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to add member.' });
+    }
+});
+
+
 // server
 
 app.use((err, req, res, next) => {
