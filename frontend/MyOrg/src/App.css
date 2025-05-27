@@ -1,0 +1,13 @@
+button {
+    transition: transform 0.2s ease;
+}
+
+button:hover {
+    cursor: pointer;
+    transform: translateY(-4px);
+    transform: scale(1.03);
+}
+
+button:active {
+    transform: scale(0.97);
+}
