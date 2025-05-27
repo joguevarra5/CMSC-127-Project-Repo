@@ -49,17 +49,19 @@ function Main() {
             <div className="bg-white w-full min-h-[625px] rounded-2xl shadow-lg p-6">
                 <p className="text-4xl font-bold"> Manage Database </p>
 
-                {/* table display */}
-                <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
-                    <DataGrid
-                        rows={data}
-                        columns={columns}
-                        initialState={{ pagination: { paginationModel } }}
-                        pageSizeOptions={[5, 10]}
-                        checkboxSelection
-                        sx={{ border: 0 }}
-                    />
-                </Paper>
+                <div>
+                    {/* table display */}
+                    <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
+                        <DataGrid
+                            rows={data}
+                            columns={columns}
+                            initialState={{ pagination: { paginationModel } }}
+                            pageSizeOptions={[5, 10]}
+                            checkboxSelection
+                            sx={{ border: 0 }}
+                        />
+                    </Paper>
+                </div>
             </div>
         </div>
     );
