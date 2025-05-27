@@ -5,18 +5,23 @@ import { DataGrid } from '@mui/x-data-grid';
 
 function Main() {
     const [data, setData] = useState<any[]>([]);
+    const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchOrgs();
-    }, []);
+        fetchMembers(selectedOrg);
+    }, [selectedOrg]);
 
-    const fetchOrgs = () => {
-        fetch("http://localhost:8080/members")
+    const fetchMembers = (orgName: string | null) => {
+        const url = orgName
+            ? `http://localhost:8080/members/by-org?org_name=${encodeURIComponent(orgName)}`
+            : `http://localhost:8080/members/by-org`;
+
+        fetch(url)
             .then(res => res.json())
             .then(data => {
                 const dataWithIds = data.map((row, index) => ({
                     ...row,
-                    id: index + 1
+                    id: index + 1,
                 }));
                 setData(dataWithIds);
             })
@@ -36,35 +41,16 @@ function Main() {
         pageSize: 5,
     };
 
-
-
     return (
         <div className="bg-[#7170f5] min-h-screen flex justify-end p-4">
-            <Sidebar></Sidebar>
+            <Sidebar onOrgSelect={setSelectedOrg} />
 
             {/* main screen */}
             <div className="bg-white w-full min-h-[625px] rounded-2xl shadow-lg p-6">
                 <p className="text-4xl font-bold"> Manage Database </p>
 
-                {/* options */}
-                <div className="flex items-center justify-between p-4">
-                    <div className="flex items-center space-x-4">
-                        <p className="text-2xl">Reports:</p>
-                        <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            View Members
-                        </button>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            View Fees
-                        </button>
-                    </div>
-
-                    <div>
-                        <p className="text-2xl font-medium">Filter</p>
-                    </div>
-                </div>
-
-                {/* for table display */}
-                <Paper sx={{ height: 400, width: '100%' }}>
+                {/* table display */}
+                <Paper sx={{ height: 400, width: '100%', mt: 2 }}>
                     <DataGrid
                         rows={data}
                         columns={columns}
@@ -76,7 +62,7 @@ function Main() {
                 </Paper>
             </div>
         </div>
-    )
+    );
 }
 
 export default Main

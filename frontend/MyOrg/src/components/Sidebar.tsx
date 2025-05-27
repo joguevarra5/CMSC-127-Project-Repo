@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import logo from '../assets/images/logo.png';
 import AddOrgModal from './AddOrgModal'; // adjust path as needed
 
-function Sidebar() {
+function Sidebar({ onOrgSelect }) {
     const [orgs, setOrgs] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -54,12 +54,20 @@ function Sidebar() {
 
             <div>
                 {orgs.map((org) => (
-                    <div>
-                        <button key={org.org_name} className="items-start text-2xl w-full text-white m-2 text-left">
-                            {org.org_name}
-                        </button>
-                    </div>
+                    <button
+                        key={org.org_name}
+                        onClick={() => onOrgSelect(org.org_name)}
+                        className="items-start text-2xl w-full text-white m-2 text-left hover:underline"
+                    >
+                        {org.org_name}
+                    </button>
                 ))}
+                <button
+                    onClick={() => onOrgSelect(null)} // to show all members
+                    className="items-start text-xl w-full text-white m-2 text-left"
+                >
+                    Show All
+                </button>
             </div>
 
             {isAddModalOpen && (

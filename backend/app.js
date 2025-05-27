@@ -44,6 +44,21 @@ app.get("/members", async (req, res) => {
     res.send(result);
 });
 
+app.get("/members/by-org", async (req, res) => {
+    const { org_name } = req.query;
+
+    if (!org_name) {
+        return res.status(400).send({ message: "Missing org_name in query parameters." });
+    }
+
+    try {
+        const result = await orgService.getMembersByOrgName(org_name);
+        res.send(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: "Failed to fetch members by org." });
+    }
+});
 
 // server
 

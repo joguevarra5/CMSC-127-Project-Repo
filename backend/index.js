@@ -46,8 +46,29 @@ export async function getMembersByOrg() {
         `SELECT o.org_name, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status, s.gender, s.degprog, om.join_date, om.committee
         FROM student AS s JOIN org_mem AS om ON s.student_id = om.student_id
         JOIN org AS o ON om.org_id = o.org_id ORDER BY o.org_id;`
-    )
+    );
     return result;
+}
+
+export async function getMembersByOrgName(orgName) {
+    const [result] = await pool.query(
+        `SELECT o.org_name, om.position, om.status, s.gender, s.degprog, om.join_date, om.committee
+         FROM student AS s 
+         JOIN org_mem AS om ON s.student_id = om.student_id
+         JOIN org AS o ON om.org_id = o.org_id
+         WHERE o.org_name = ?
+         ORDER BY o.org_id`,
+        [orgName]
+    );
+    return result;
+}
+
+export async function addOrgMember(org_id, student_id, join_date, status, position, assignment_date, committee) {
+    await pool.query(
+        `INSERT INTO org_mem (org_id, student_id, join_date, status, position, assignment_date, committee)
+        VALUES (4, '202327501', '2023-10-27', 'Inactive', NULL, NULL, 'Internals');`
+        , [org_id, student_id, join_date, status, position, assignment_date, committee]
+    );
 }
 
 // TODO: addMember, editMember, deleteMember
@@ -70,4 +91,5 @@ export default {
     updateOrg,
     deleteOrg,
     getMembersByOrg,
+    getMembersByOrgName,
 };
