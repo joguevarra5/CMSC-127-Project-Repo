@@ -43,9 +43,9 @@ export async function deleteOrg(org_id) {
 
 export async function getMembersByOrg() {
     const [result] = await pool.query(
-        `SELECT o.org_name, om.position, om.status, s.gender, s.degprog, om.join_date, om.committee
+        `SELECT o.org_name, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status, s.gender, s.degprog, om.join_date, om.committee
         FROM student AS s JOIN org_mem AS om ON s.student_id = om.student_id
-        JOIN org AS o ON om.org_id = o.org_id;`
+        JOIN org AS o ON om.org_id = o.org_id ORDER BY o.org_id;`
     )
     return result;
 }
@@ -58,8 +58,11 @@ export async function getPendingFees() {
 
 }
 
-const result = await getMembersByOrg();
-console.log(result);
+// extra functions
+
+export async function getFields() {
+
+}
 
 export default {
     getOrgs,

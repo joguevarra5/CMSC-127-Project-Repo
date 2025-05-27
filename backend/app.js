@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// endpoints
+// org endpoints
 
 app.get("/orgs", async (req, res) => {
     const result = await orgService.getOrgs();
@@ -28,17 +28,21 @@ app.post('/org-add', async (req, res) => {
 app.get("/org-names", async (req, res) => {
     const result = await orgService.getOrgs();
     const namesOnly = result.map(org => ({
-        org_id: org.org_id,            // include this
+        org_id: org.org_id,
         org_name: org.org_name,
-        classification: org.classification, // include this too, used in modal
+        classification: org.classification,
     }));
     res.send(namesOnly);
 });
 
 
+// member endpoints
 
-
-
+app.get("/members", async (req, res) => {
+    const result = await orgService.getMembersByOrg();
+    console.log(result);
+    res.send(result);
+});
 
 
 // server
