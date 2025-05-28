@@ -6,19 +6,29 @@ function ReportsPage() {
     const [originalData, setOriginalData] = useState<any[]>([]);
     const [filteredData, setFilteredData] = useState<any[]>([]);
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
 
-    useEffect(() => {
-        fetchMembers(selectedOrg);
-    }, [selectedOrg]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [alumniData, setAlumniData] = useState<any[]>([]);
+    const [filteredAlumni, setFilteredAlumni] = useState<any[]>([]);
+
+    const [percentage, setPercentage] = useState<any[]>([]);
+
+
 
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchMembers(selectedOrg);
     }, [selectedOrg]);
+
+    useEffect(() => {
+        if (selectedDate) {
+            fetchAlumni(selectedDate);
+        }
+    }, [selectedDate]);
 
     const fetchMembers = (orgName: string | null) => {
         const url = orgName
@@ -54,9 +64,45 @@ function ReportsPage() {
             });
         }
 
+        filtered = filtered.filter(member =>
+            member.role && member.role.trim() !== ''
+        );
+
         setFilteredData(filtered);
     }, [originalData, selectedRole, selectedYear]);
 
+    const fetchAlumni = (date: string) => {
+        const url = `http://localhost:8080/member-alumni?date=${encodeURIComponent(date)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const dataWithIds = data.map((row, index) => ({
+                    ...row,
+                    id: index + 1,
+                }));
+                setAlumniData(dataWithIds);
+            })
+            .catch(err => console.error("Failed to fetch alumni data:", err));
+    };
+
+    useEffect(() => {
+        if (selectedOrg) {
+            setFilteredAlumni(alumniData.filter(alum => alum.org_name === selectedOrg));
+        } else {
+            setFilteredAlumni(alumniData);
+        }
+    }, [filteredAlumni, selectedOrg]);
+
+
+    useEffect(() => {
+        fetch("http://localhost:8080/inactive-active")
+            .then(res => res.json())
+            .then(data => setPercentage(data))
+            .catch(err => console.error("Failed to fetch org stats:", err));
+    }, []);
+
+    // =================== FOR TABLE REPORTS ===================
 
     const renderReport1 = (fees: any[]) => {
         const formatDate = (dateString: string | null) => {
@@ -92,6 +138,61 @@ function ReportsPage() {
             </tbody>
         </table>
     }
+
+    const renderReport3 = (fees: any[]) => {
+        const formatDate = (dateString: string | null) => {
+            if (!dateString) return 'NULL';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            });
+        }
+
+        return <table className="w-full border border-gray-300 mt-4">
+            <thead className="bg-gray-200">
+                <tr>
+                    <th className="p-2 border">Name</th>
+                    <th className="p-2 border">Organization</th>
+                    <th className="p-2 border">Graduation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {filteredAlumni.map((alum, index) => (
+                    <tr key={index} className="text-center">
+                        <td className="p-2 border">{alum.student_name ?? 'NULL'}</td>
+                        <td className="p-2 border">{alum.org_name}</td>
+                        <td className="p-2 border">{formatDate(alum.graduation_date) ?? 'NULL'}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    }
+
+    const renderReport4 = (fees: any[]) => {
+        return <table className="w-full border border-gray-300 mt-4">
+            <thead className="bg-gray-200">
+                <tr>
+                    <th className="p-2 border">Organization</th>
+                    <th className="p-2 border">Active Members</th>
+                    <th className="p-2 border">Inactive Members</th>
+                    <th className="p-2 border">Active-Inactive Ratio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {percentage.map((ratio, index) => (
+                    <tr key={index} className="text-center">
+                        <td className="p-2 border">{ratio.org_name}</td>
+                        <td className="p-2 border">{ratio.active_count}</td>
+                        <td className="p-2 border">{ratio.inactive_count}</td>
+                        <td className="p-2 border">{ratio.active_inactive_ratio ?? 'N/A'}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    };
+
 
     return (
         <div className="bg-[#7170f5] min-h-screen flex justify-end p-4">
@@ -129,12 +230,13 @@ function ReportsPage() {
 
                     {/* filters row for report 1 */}
                     <div className="flex items-center space-x-3 px-4">
-                        <p><b>Report 1:</b> Check all</p>
+                        <p><b>Reports 1 & 2:</b> Check all</p>
 
                         <select
                             value={selectedRole}
                             onChange={(e) => setSelectedRole(e.target.value)}
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]">
+                            <option value="">Role</option>
                             <option value="president">Presidents</option>
                             <option value="executive">Executives</option>
                             <option value="publicRelations">Public Relations</option>
@@ -155,17 +257,29 @@ function ReportsPage() {
 
                     <br />
 
-                    {/* filters row for report 2 */}
+                    {/* filters row for report 3 */}
                     <div className="flex items-center space-x-3 px-4">
-                        <p><b>Report 2:</b> Check all alumni as of </p>
+                        <p><b>Report 3:</b> Check all alumni as of </p>
 
                         <input
                             type="text"
                             placeholder="YYYY/MM/DD"
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                            value={selectedYear}
-                            onChange={(e) => setSelectedYear(e.target.value)} />
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)} />
                     </div>
+
+                    {/* report 3 */}
+                    {renderReport3(filteredAlumni)}
+
+                    <br />
+
+                    {/* report 4 */}
+                    <div className="flex items-center space-x-3 px-4">
+                        <p><b>Report 4:</b> Check all active-inactive rations of orgs </p>
+                    </div>
+                    {renderReport4(percentage)}
+
                 </div>
             </div>
         </div>

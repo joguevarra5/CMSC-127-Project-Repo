@@ -45,8 +45,8 @@ export async function getMembersByOrg() {
 
 export async function getMembersByOrgName(orgName) {
     const [result] = await pool.query(
-        `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position AS role, om.status,
-        s.student_id, s.gender, s.degprog, YEAR(om.join_date) AS batch, om.assignment_date, om.join_date, om.committee
+        `SELECT s.*, o.*, om.*,
+        CONCAT(s.fname, ' ', s.lname) AS student_name, YEAR(om.join_date) AS batch, om.position AS role
         FROM student AS s 
         JOIN org_mem AS om ON s.student_id = om.student_id
         JOIN org AS o ON om.org_id = o.org_id
@@ -59,8 +59,8 @@ export async function getMembersByOrgName(orgName) {
 
 export async function getMembersByOrgNameSorted(orgName, conditional) {
     const [result] = await pool.query(
-        `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position AS role, om.status,
-        s.student_id, s.gender, s.degprog, YEAR(om.join_date) AS batch, om.join_date, om.committee
+        `SELECT s.*, o.*, om.*,
+        CONCAT(s.fname, ' ', s.lname) AS student_name, YEAR(om.join_date) AS batch, om.position AS role
         FROM student AS s 
         JOIN org_mem AS om ON s.student_id = om.student_id
         JOIN org AS o ON om.org_id = o.org_id
@@ -119,7 +119,7 @@ export async function getAllFees() {
 // for getting fees for the whole organization
 export async function getFeesByOrgName(orgName) {
     const [result] = await pool.query(
-         `SELECT f.transaction_id, f.deadline_date, f.payment_date, f.payment_status, f.amount,
+        `SELECT f.transaction_id, f.deadline_date, f.payment_date, f.payment_status, f.amount,
                 s.student_id, CONCAT(s.fname, ' ', s.lname) AS student_name, o.org_name
          FROM fee AS f
          JOIN student AS s ON f.student_id = s.student_id
@@ -234,28 +234,33 @@ export async function getRoles(position) {
     return result;
 }
 
+// services/orgService.js
 export async function getPercentage() {
     const [result] = await pool.query(
-        `SELECT (
-        SELECT COUNT(*)
-        FROM org_mem
-        WHERE status = "Active"
-        ) / (
-        SELECT COUNT(*)
-        FROM org_mem
-        WHERE status = "Inactive"
-        ) AS "active_inactive_percentage"`
+        `SELECT 
+            o.org_name,
+            SUM(om.status = 'Active') AS active_count,
+            SUM(om.status = 'Inactive') AS inactive_count,
+            (SUM(om.status = 'Active') / NULLIF(SUM(om.status = 'Inactive'), 0)) AS active_inactive_ratio
+        FROM org_mem as om JOIN org as o ON om.org_id = o.org_id
+        GROUP BY o.org_name`
     );
-    return result;
+    return result; // <-- result is an array
 }
+
 
 export async function getAlumni(date) {
     const [result] = await pool.query(
-        `SELECT *  
-        FROM org_mem AS om  
-        JOIN student AS s ON om.student_id = s.student_id  
-        WHERE s.graduation_date > ?`
-        , [date]
+        `SELECT 
+            s.student_id, 
+            CONCAT(s.fname, ' ', s.lname) AS student_name,
+            o.org_name,
+            s.graduation_date
+        FROM org_mem AS om
+        JOIN student AS s ON om.student_id = s.student_id
+        JOIN org AS o ON om.org_id = o.org_id
+        WHERE s.graduation_date < ?`,
+        [date]
     );
     return result;
 }
