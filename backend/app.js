@@ -149,19 +149,20 @@ app.post('/member-add', async (req, res) => {
 
 // reports
 
-app.get('/member-executives', async (req, res) => {
-    const { start, end } = req.query;
+app.get('/member-alumni', async (req, res) => {
+    const { date } = req.query;
 
     try {
-        const result = await orgService.getExecutiveMembers(start, end);
-        res.status(200).send({ message: 'Fetched executive members successfully.' });
+        const result = await orgService.getAlumni(date);
+        res.status(200).send(result);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Failed to fetch executive members.' });
+        res.status(500).send({ message: 'Failed to fetch alumni members.' });
     }
 });
 
 // fee endpoints
+
 app.get("/fees", async (req, res) => {
     try {
         const result = await orgService.getAllFees(); // You'll need to implement this in orgService

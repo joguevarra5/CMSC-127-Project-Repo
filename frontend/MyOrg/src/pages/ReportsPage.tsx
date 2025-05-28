@@ -6,19 +6,27 @@ function ReportsPage() {
     const [originalData, setOriginalData] = useState<any[]>([]);
     const [filteredData, setFilteredData] = useState<any[]>([]);
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
 
-    useEffect(() => {
-        fetchMembers(selectedOrg);
-    }, [selectedOrg]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [alumniData, setAlumniData] = useState<any[]>([]);
+    const [filteredAlumni, setFilteredAlumni] = useState<any[]>([]);
+
+
 
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchMembers(selectedOrg);
     }, [selectedOrg]);
+
+    useEffect(() => {
+        if (selectedDate) {
+            fetchAlumni(selectedDate);
+        }
+    }, [selectedDate]);
 
     const fetchMembers = (orgName: string | null) => {
         const url = orgName
@@ -57,6 +65,31 @@ function ReportsPage() {
         setFilteredData(filtered);
     }, [originalData, selectedRole, selectedYear]);
 
+    const fetchAlumni = (date: string) => {
+        const url = `http://localhost:8080/member-alumni?date=${encodeURIComponent(date)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const dataWithIds = data.map((row, index) => ({
+                    ...row,
+                    id: index + 1,
+                }));
+                setAlumniData(dataWithIds);
+            })
+            .catch(err => console.error("Failed to fetch alumni data:", err));
+    };
+
+    useEffect(() => {
+        if (selectedOrg) {
+            setFilteredAlumni(alumniData.filter(alum => alum.org_name === selectedOrg));
+        } else {
+            setFilteredAlumni(alumniData);
+        }
+    }, [alumniData, selectedOrg]);
+
+
+    // =================== FOR TABLE REPORTS ===================
 
     const renderReport1 = (fees: any[]) => {
         const formatDate = (dateString: string | null) => {
@@ -87,6 +120,37 @@ function ReportsPage() {
                         <td className="p-2 border">{exec.org_name}</td>
                         <td className="p-2 border">{exec.role ?? 'NULL'}</td>
                         <td className="p-2 border">{formatDate(exec.assignment_date) ?? 'NULL'}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    }
+
+    const renderReport2 = (fees: any[]) => {
+        const formatDate = (dateString: string | null) => {
+            if (!dateString) return 'NULL';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            });
+        }
+
+        return <table className="w-full border border-gray-300 mt-4">
+            <thead className="bg-gray-200">
+                <tr>
+                    <th className="p-2 border">Name</th>
+                    <th className="p-2 border">Organization</th>
+                    <th className="p-2 border">Graduation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {filteredAlumni.map((alum, index) => (
+                    <tr key={index} className="text-center">
+                        <td className="p-2 border">{alum.student_name ?? 'NULL'}</td>
+                        <td className="p-2 border">{alum.org_name}</td>
+                        <td className="p-2 border">{formatDate(alum.graduation_date) ?? 'NULL'}</td>
                     </tr>
                 ))}
             </tbody>
@@ -163,9 +227,13 @@ function ReportsPage() {
                             type="text"
                             placeholder="YYYY/MM/DD"
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                            value={selectedYear}
-                            onChange={(e) => setSelectedYear(e.target.value)} />
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)} />
                     </div>
+
+                    {/* report 2 */}
+                    {renderReport2(filteredAlumni)}
+
                 </div>
             </div>
         </div>
