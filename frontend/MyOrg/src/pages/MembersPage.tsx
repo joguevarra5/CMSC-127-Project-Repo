@@ -7,7 +7,7 @@ import DeleteConfirmationModal from '../components/DeleteMemberModal';
 import { useNavigate } from 'react-router-dom';
 
 
-function Main() {
+function MembersPage() {
     const [originalData, setOriginalData] = useState<any[]>([]);
     const [filteredData, setFilteredData] = useState<any[]>([]);
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
@@ -193,6 +193,67 @@ function Main() {
         }
     };
 
+    const renderTable = (fees: any[]) => {
+        const formatDate = (dateString: string | null) => {
+            if (!dateString) return 'NULL';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            });
+        }
+
+        return <table className="w-full border border-gray-300 mt-4 text-sm">
+            <thead className="bg-gray-200">
+                <tr>
+                    <th className="p-1 border">Name</th>
+                    <th className="p-1 border">Student Number</th>
+                    <th className="p-1 border">Organization</th>
+                    <th className="p-1 border">Role</th>
+                    <th className="p-1 border">Assignment Date</th>
+                    <th className="p-1 border">Status</th>
+                    <th className="p-1 border">Gender</th>
+                    <th className="p-1 border">Degree Program</th>
+                    <th className="p-1 border">Batch</th>
+                    <th className="p-1 border">Committee</th>
+                    <th className="p-1 border">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {filteredData.map((mem, index) => (
+                    <tr key={index} className="text-center">
+                        <td className="p-1 border">{mem.student_name}</td>
+                        <td className="p-1 border">{mem.student_id}</td>
+                        <td className="p-1 border">{mem.org_name}</td>
+                        <td className="p-1 border">{mem.role ?? 'Member'}</td>
+                        <td className="p-1 border">{mem.assignment_date ? formatDate(mem.assignment_date) : 'N/A'}</td>
+                        <td className="p-1 border">{mem.status}</td>
+                        <td className="p-1 border">{mem.gender}</td>
+                        <td className="p-1 border">{mem.degprog}</td>
+                        <td className="p-1 border">{mem.batch}</td>
+                        <td className="p-1 border">{mem.committee ?? 'N/A'}</td>
+                        <td className="p-1 border">
+                            <div className="flex flex-col items-center gap-1">
+                                <button
+                                    className="w-12 h-5 bg-[#a594f9] rounded-full text-[10px] text-white"
+                                    onClick={() => handleEdit(mem)}>
+                                    Edit
+                                </button>
+                                <button
+                                    className="w-12 h-5 bg-[#a594f9] rounded-full text-[10px] text-white"
+                                    onClick={() => handleDelete(mem)}>
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+
+    }
+
     return (
         <div className="bg-[#7170f5] min-h-screen flex justify-end p-4">
             <Sidebar onOrgSelect={setSelectedOrg} />
@@ -207,8 +268,7 @@ function Main() {
                     <div className="flex items-center justify-between w-full p-4">
                         <div className="flex items-center space-x-4">
                             <p className="text-2xl">Reports:</p>
-                            <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
-                                onClick={() => { }}>
+                            <button className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition">
                                 View Members
                             </button>
                             <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
@@ -216,7 +276,7 @@ function Main() {
                                 View Fees
                             </button>
                             <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
-                                onClick={() => { }}>
+                                onClick={() => navigate('/reports')}>
                                 View Reports
                             </button>
                         </div>
@@ -281,7 +341,7 @@ function Main() {
                 <br />
 
                 {/* table display */}
-                <div className="flex flex-wrap items-center justify-center gap-4">
+                {/* <div className="flex flex-wrap items-center justify-center gap-4">
                     {filteredData.map((row, rowIndex) => (
                         <MemberInformationCard
                             key={row.id ?? rowIndex}
@@ -290,7 +350,9 @@ function Main() {
                             onDelete={handleDelete}
                         />
                     ))}
-                </div>
+                </div> */}
+
+                {renderTable(filteredData)}
             </div >
 
             {editModalOpen && editRow && (
@@ -326,4 +388,4 @@ function Main() {
     );
 }
 
-export default Main
+export default MembersPage
