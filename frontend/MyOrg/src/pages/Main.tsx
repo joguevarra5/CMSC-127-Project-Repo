@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import MemberInformationCard from '../components/MemberInformationCard';
+import { useNavigate } from 'react-router-dom';
 
 function Main() {
     const [data, setData] = useState<any[]>([]);
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchMembers(selectedOrg);
@@ -18,7 +20,7 @@ function Main() {
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                const dataWithIds = data.map((row, index) => ({
+                const dataWithIds = data.map((row: any, index: number) => ({
                     ...row,
                     id: index + 1,
                 }));
@@ -159,7 +161,7 @@ function Main() {
                         <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
                             View Members
                         </button>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
+                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition" onClick={() => navigate('/fees')}>
                             View Fees
                         </button>
                         <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">

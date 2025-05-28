@@ -92,6 +92,77 @@ app.post('/member-add', async (req, res) => {
     }
 });
 
+// fee endpoints
+
+app.get("/fees", async (req, res) => {
+    try {
+        const result = await orgService.getAllFees(); // You'll need to implement this in orgService
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch all fees." });
+    }
+});
+
+app.get("/fees/by-org", async (req, res) => {
+    const { org_name } = req.query;
+
+    try {
+        if (org_name) {
+            const result = await orgService.getFeesByOrgName(org_name);
+            res.send(result);
+        } else {
+            // Return all orgs and their fees
+            const orgs = await orgService.getOrgs();
+            const allFeesByOrg = {};
+
+            for (const org of orgs) {
+                const fees = await orgService.getFeesByOrgName(org.org_name);
+                allFeesByOrg[org.org_name] = fees;
+            }
+
+            res.send(allFeesByOrg);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch fees for organization(s)." });
+    }
+});
+
+app.get("/fees/by-student", async (req, res) => {
+    const { student_id } = req.query;
+
+    try {
+        const result = await orgService.getFeesByStudentId(student_id);
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch fees for student." });
+    }
+});
+
+app.post("/fee-add", async (req, res) => {
+    try {
+        const { transaction_id, deadline_date, payment_date, payment_status, amount, student_id, org_id } = req.body;
+        await orgService.addFee(transaction_id, deadline_date, payment_date, payment_status, amount, student_id, org_id);
+        res.status(201).send({ message: "Added fee successfully." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to add fee." });
+    }
+});
+
+app.put("/fee-edit", async (req, res) => {
+    try {
+        const { payment_date, payment_status, org_id, student_id } = req.body;
+        await orgService.editFee(payment_date, payment_status, org_id, student_id);
+        res.status(200).send({ message: "Edited fee successfully." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to edit fee." });
+    }
+});
+
 // server
 
 app.use((err, req, res, next) => {
