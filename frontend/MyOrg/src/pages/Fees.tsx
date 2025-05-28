@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar2';
 import FeeModal from '../components/FeeModal';
 
@@ -38,6 +39,8 @@ function Fees() {
             console.error('Error submitting fee:', err);
         }
     };
+
+    const navigate = useNavigate();
 
     const fetchFees = () => {
         const url = selectedOrg
@@ -114,13 +117,15 @@ function Fees() {
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center space-x-4">
                         <p className="text-2xl">Reports:</p>
-                        <button className="bg-[#a594f9] text-white px-6 h-10 text-2xl rounded-full hover:bg-[#8d7cf3] transition">
+                        <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                            onClick={() => navigate('/')}>
                             View Members
                         </button>
-                        <button className="bg-[#a594f9] text-white px-5 h-10 text-2xl rounded-full hover:bg-[#8d7cf3] transition">
+                        <button className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition">
                             View Fees
                         </button>
-                        <button className="bg-[#a594f9] text-white px-5 h-10 text-2xl rounded-full hover:bg-[#8d7cf3] transition">
+                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                            onClick={() => navigate('/reports')}>
                             View Reports
                         </button>
                     </div>
