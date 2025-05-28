@@ -5,7 +5,11 @@ import Sidebar2 from '../components/Sidebar2';
 function FeeReportsPage() {
     const [originalFees, setOriginalFees] = useState<any[]>([]);
     const [filteredFees, setFilteredFees] = useState<any[]>([]);
+    const [paidUnpaidFees, setPaidUnpaidFees] = useState<any[]>([]);
+    const [latePayments, setLatePayments] = useState<any[]>([]);
+    const [debts, setDebts] = useState<any[]>([]);
     const [selectedYear, setSelectedYear] = useState('');
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,9 +58,36 @@ function FeeReportsPage() {
         });
     };
 
+    const fetchPaidUnpaidFees = () => {
+        fetch('http://localhost:8080/paid-unpaid')
+            .then(res => res.json())
+            .then(data => {
+                setPaidUnpaidFees(data);
+            })
+            .catch(err => console.error('Failed to fetch paid/unpaid fees:', err));
+    };
+
+    useEffect(() => {
+        fetchPaidUnpaidFees();
+    }, []);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/highest-debt')
+            .then(res => res.json())
+            .then(data => setDebts(data))
+            .catch(err => console.error(err));
+    }, []);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/late-payments')
+            .then(res => res.json())
+            .then(data => setLatePayments(data))
+            .catch(err => console.error('Failed to fetch late payments:', err));
+    }, []);
+
     const renderFeeReport1 = () => {
         return (
-            <table className="w-full border border-gray-300 mt-4">
+            <table className="w-full border border-gray-300 mt-2">
                 <thead className="bg-gray-200">
                     <tr>
                         <th className="p-2 border">Fee ID</th>
@@ -71,7 +102,7 @@ function FeeReportsPage() {
                 <tbody>
                     {filteredFees.map((fee, index) => (
                         <tr key={index} className="text-center">
-                           <td className="p-2 border">{fee.transaction_id ?? 'NULL'}</td>
+                            <td className="p-2 border">{fee.transaction_id ?? 'NULL'}</td>
                             <td className="p-2 border">{formatDate(fee.deadline_date)}</td>
                             <td className="p-2 border">{formatDate(fee.payment_date)}</td>
                             <td className="p-2 border">{fee.payment_status ?? 'NULL'}</td>
@@ -85,9 +116,86 @@ function FeeReportsPage() {
         );
     };
 
+    const renderFeeReport3 = () => {
+        return (
+            <table className="w-full border border-gray-300">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="p-2 border">Organization</th>
+                        <th className="p-2 border">Pending Amount</th>
+                        <th className="p-2 border">Paid Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {paidUnpaidFees.map((entry, index) => (
+                        <tr key={index} className="text-center">
+                            <td className="p-2 border">{entry.org_name}</td>
+                            <td className="p-2 border">{entry.pending}</td>
+                            <td className="p-2 border">{entry.paid}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
+
+    const renderFeeReport4 = () => {
+        return (
+            <table className="w-full border border-gray-300">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="p-2 border">Organization</th>
+                        <th className="p-2 border">Name</th>
+                        <th className="p-2 border">Payment Date</th>
+                        <th className="p-2 border">Deadline Date</th>
+                        <th className="p-2 border">Amount</th>
+                        <th className="p-2 border">Semester</th>
+                        <th className="p-2 border">Academic Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {latePayments.map((payment, index) => (
+                        <tr key={index} className="text-center">
+                            <td className="p-2 border">{payment.org_id}</td>
+                            <td className="p-2 border">{payment.student_name}</td>
+                            <td className="p-2 border">{formatDate(payment.payment_date)}</td>
+                            <td className="p-2 border">{formatDate(payment.deadline_date)}</td>
+                            <td className="p-2 border">{payment.amount}</td>
+                            <td className="p-2 border">{payment.semester}</td>
+                            <td className="p-2 border">{payment.academic_year}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
+
+    const renderFeeReport5 = () => {
+        return (
+            <table className="w-full border border-gray-300">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="p-2 border">Name</th>
+                        <th className="p-2 border">Organization</th>
+                        <th className="p-2 border">Debt Owed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {debts.map((fee, index) => (
+                        <tr key={index} className="text-center">
+                            <td className="p-2 border">{fee.student_name ?? 'NULL'}</td>
+                            <td className="p-2 border">{(fee.org_name)}</td>
+                            <td className="p-2 border">{(fee.max_sum_per_student)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
+
     return (
         <div className="bg-[#7170f5] min-h-screen flex justify-end p-4">
-            <Sidebar2 onOrgSelect={() => {}} />
+            <Sidebar2 onOrgSelect={() => { }} />
 
             {/* Main screen */}
             <div className="bg-white w-full min-h-[625px] rounded-2xl shadow-lg p-6">
@@ -101,21 +209,21 @@ function FeeReportsPage() {
                         <div className="flex items-center space-x-4">
                             <p className="text-2xl">Reports:</p>
                             <button
-                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 transition"
                                 onClick={() => navigate('/')}>
                                 View Members
                             </button>
                             <button
-                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 transition"
                                 onClick={() => navigate('/fees')}>
                                 View Fees
                             </button>
                             <button
-                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300"  onClick={() => navigate('/reports')}>
+                                className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300" onClick={() => navigate('/reports')}>
                                 View Member Reports
                             </button>
                             <button
-                                className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition"  onClick={() => navigate('/reports-fees')}>
+                                className="bg-[#7170f5] px-5 h-10 rounded-[25px] text-white transition" onClick={() => navigate('/reports-fees')}>
                                 View Fee Reports
                             </button>
                         </div>
@@ -124,7 +232,7 @@ function FeeReportsPage() {
                     <br />
 
                     {/* Filter row for fee report */}
-                    <div className="flex items-center space-x-3 px-4">
+                    <div className="flex items-center space-x-3">
                         <p><b>Report 1:</b> All Pending Fees for Year</p>
 
                         <input
@@ -135,9 +243,27 @@ function FeeReportsPage() {
                             onChange={(e) => setSelectedYear(e.target.value)}
                         />
                     </div>
-
                     {/* Report table */}
                     {renderFeeReport1()}
+
+                    <br />
+
+                    <p><b>Report 3:</b> Paid and Unpaid Fees per Org</p>
+                    {/* Report table */}
+                    {renderFeeReport3()}
+
+                    <br />
+
+                    <p><b>Report 4:</b> Late Payments by Members</p>
+                    {/* Report table */}
+                    {renderFeeReport4()}
+
+                    <br />
+
+                    <p><b>Report 5:</b> Highest Debt Owed</p>
+                    {/* Report table */}
+                    {renderFeeReport5()}
+
                 </div>
             </div>
         </div>

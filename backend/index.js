@@ -247,6 +247,49 @@ export async function getRoles(position) {
     return result;
 }
 
+
+export async function getPaidUnpaid() {
+    const [result] = await pool.query(
+        `SELECT o.org_name,
+        SUM(CASE WHEN f.payment_status = 'Pending' THEN amount ELSE 0 END) AS pending,
+        SUM(CASE WHEN f.payment_status = 'Paid' THEN amount ELSE 0 END) AS paid
+        FROM fee AS f JOIN org AS o ON f.org_id = o.org_id
+        GROUP BY f.org_id;`
+    );
+    return result;
+}
+
+export async function getHighestDebt() {
+    const [result] = await pool.query(
+        `SELECT o.org_id, o.org_name,
+        CONCAT(st.fname, ' ', st.lname) AS student_name,
+        MAX(s.total_amount) AS max_sum_per_student
+        FROM (SELECT org_id, student_id, SUM(amount) AS total_amount
+        FROM fee GROUP BY org_id, student_id
+        ) AS s JOIN org AS o ON s.org_id = o.org_id
+        JOIN student AS st ON s.student_id = st.student_id
+        GROUP BY o.org_id, o.org_name, student_name;`
+    );
+    return result;
+}
+
+export async function getLatePayments() {
+    const [result] = await pool.query(
+        `SELECT f.*, CONCAT(s.fname, ' ', s.lname) as student_name, o.org_name,
+        CASE
+            WHEN f.payment_date > CAST(CONCAT(YEAR(f.payment_date), '-05-31') AS DATE) THEN '2nd Semester'
+            ELSE '1st Semester'
+        END AS semester,
+        CASE
+            WHEN f.payment_date > CAST(CONCAT(YEAR(f.payment_date), '-05-31') AS DATE) THEN CONCAT(YEAR(f.payment_date), ' - ', YEAR(f.payment_date) + 1)
+            ELSE CONCAT(YEAR(f.payment_date) - 1, ' - ', YEAR(f.payment_date))
+        END AS academic_year
+        FROM fee AS f JOIN student AS s ON f.student_id = s.student_id JOIN org AS o ON f.org_id = o.org_id
+        WHERE f.payment_date > f.deadline_date ORDER BY f.org_id;`
+    );
+    return result;
+}
+
 // services/orgService.js
 export async function getPercentage() {
     const [result] = await pool.query(
@@ -258,7 +301,7 @@ export async function getPercentage() {
         FROM org_mem as om JOIN org as o ON om.org_id = o.org_id
         GROUP BY o.org_name`
     );
-    return result; // <-- result is an array
+    return result;
 }
 
 
@@ -299,5 +342,9 @@ export default {
     editFee,
     getAllFees,
     getFeesByOrgName,
-    getFeesByStudentId
+    getFeesByStudentId,
+    getPaidUnpaid,
+    getHighestDebt,
+    getPendingFees,
+    getLatePayments
 };

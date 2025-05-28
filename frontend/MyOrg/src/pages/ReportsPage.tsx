@@ -200,7 +200,7 @@ function ReportsPage() {
 
             {/* main screen */}
             <div className="bg-white w-full min-h-[625px] rounded-2xl shadow-lg p-6">
-                <p className="text-4xl font-bold"> Manage Database </p>
+                <p className="text-4xl font-bold"> Member Reports </p>
 
                 <br />
 
@@ -210,21 +210,21 @@ function ReportsPage() {
                         <div className="flex items-center space-x-4">
                             <p className="text-2xl">Reports:</p>
                             <button
-                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 transition"
                                 onClick={() => navigate('/')}>
                                 View Members
                             </button>
                             <button
-                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 transition"
                                 onClick={() => navigate('/fees')}>
                                 View Fees
                             </button>
                             <button
-                                className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition ">
+                                className="bg-[#7170f5] px-5 h-10 rounded-[25px] text-white transition ">
                                 View Member Reports
                             </button>
                             <button
-                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 " onClick={() => navigate('/reports-fees')}>
+                                className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 " onClick={() => navigate('/reports-fees')}>
                                 View Fee Reports
                             </button>
                         </div>
