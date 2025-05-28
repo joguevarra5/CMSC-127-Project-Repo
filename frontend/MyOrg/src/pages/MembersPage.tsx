@@ -4,6 +4,7 @@ import MemberInformationCard from '../components/MemberInformationCard';
 import EditMemberModal from '../components/EditMemberModal';
 import AddMemberModal from '../components/AddMemberModal';
 import DeleteConfirmationModal from '../components/DeleteMemberModal';
+import { useNavigate } from 'react-router-dom';
 
 
 function Main() {
@@ -22,6 +23,8 @@ function Main() {
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedRowToDelete, setSelectedRowToDelete] = useState<any | null>(null);
+
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -209,12 +212,8 @@ function Main() {
                                 View Members
                             </button>
                             <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
-                                onClick={() => { }}>
+                                onClick={() => navigate('/fees')}>
                                 View Fees
-                            </button>
-                            <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
-                                onClick={() => { }}>
-                                View Students
                             </button>
                             <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
                                 onClick={() => { }}>
