@@ -273,6 +273,15 @@ app.get("/fees-pending", async (req, res) => {
     }
 });
 
+app.get("/late-payments", async (req, res) => {
+    try {
+        const result = await orgService.getLatePayments();
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to send late payments." });
+    }
+});
 
 // server
 

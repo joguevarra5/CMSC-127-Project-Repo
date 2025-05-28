@@ -6,6 +6,7 @@ function FeeReportsPage() {
     const [originalFees, setOriginalFees] = useState<any[]>([]);
     const [filteredFees, setFilteredFees] = useState<any[]>([]);
     const [paidUnpaidFees, setPaidUnpaidFees] = useState<any[]>([]);
+    const [latePayments, setLatePayments] = useState<any[]>([]);
     const [debts, setDebts] = useState<any[]>([]);
     const [selectedYear, setSelectedYear] = useState('');
 
@@ -77,9 +78,16 @@ function FeeReportsPage() {
             .catch(err => console.error(err));
     }, []);
 
+    useEffect(() => {
+        fetch('http://localhost:8080/late-payments')
+            .then(res => res.json())
+            .then(data => setLatePayments(data))
+            .catch(err => console.error('Failed to fetch late payments:', err));
+    }, []);
+
     const renderFeeReport1 = () => {
         return (
-            <table className="w-full border border-gray-300 mt-4">
+            <table className="w-full border border-gray-300 mt-2">
                 <thead className="bg-gray-200">
                     <tr>
                         <th className="p-2 border">Fee ID</th>
@@ -108,9 +116,9 @@ function FeeReportsPage() {
         );
     };
 
-    const renderFeeReport4 = () => {
+    const renderFeeReport3 = () => {
         return (
-            <table className="w-full border border-gray-300 mt-8">
+            <table className="w-full border border-gray-300">
                 <thead className="bg-gray-200">
                     <tr>
                         <th className="p-2 border">Organization</th>
@@ -131,9 +139,40 @@ function FeeReportsPage() {
         );
     };
 
+    const renderFeeReport4 = () => {
+        return (
+            <table className="w-full border border-gray-300">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="p-2 border">Organization</th>
+                        <th className="p-2 border">Name</th>
+                        <th className="p-2 border">Payment Date</th>
+                        <th className="p-2 border">Deadline Date</th>
+                        <th className="p-2 border">Amount</th>
+                        <th className="p-2 border">Semester</th>
+                        <th className="p-2 border">Academic Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {latePayments.map((payment, index) => (
+                        <tr key={index} className="text-center">
+                            <td className="p-2 border">{payment.org_id}</td>
+                            <td className="p-2 border">{payment.student_name}</td>
+                            <td className="p-2 border">{formatDate(payment.payment_date)}</td>
+                            <td className="p-2 border">{formatDate(payment.deadline_date)}</td>
+                            <td className="p-2 border">{payment.amount}</td>
+                            <td className="p-2 border">{payment.semester}</td>
+                            <td className="p-2 border">{payment.academic_year}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
+
     const renderFeeReport5 = () => {
         return (
-            <table className="w-full border border-gray-300 mt-4">
+            <table className="w-full border border-gray-300">
                 <thead className="bg-gray-200">
                     <tr>
                         <th className="p-2 border">Name</th>
@@ -193,7 +232,7 @@ function FeeReportsPage() {
                     <br />
 
                     {/* Filter row for fee report */}
-                    <div className="flex items-center space-x-3 px-4">
+                    <div className="flex items-center space-x-3">
                         <p><b>Report 1:</b> All Pending Fees for Year</p>
 
                         <input
@@ -204,25 +243,24 @@ function FeeReportsPage() {
                             onChange={(e) => setSelectedYear(e.target.value)}
                         />
                     </div>
-
                     {/* Report table */}
                     {renderFeeReport1()}
 
                     <br />
 
-                    <div className="flex items-center space-x-3 px-4">
-                        <p><b>Report 4:</b> Paid and Unpaid Fees per Org</p>
-                    </div>
+                    <p><b>Report 3:</b> Paid and Unpaid Fees per Org</p>
+                    {/* Report table */}
+                    {renderFeeReport3()}
 
+                    <br />
+
+                    <p><b>Report 4:</b> Late Payments by Members</p>
                     {/* Report table */}
                     {renderFeeReport4()}
 
                     <br />
 
-                    <div className="flex items-center space-x-3 px-4">
-                        <p><b>Report 5:</b> Highest Debt Owed</p>
-                    </div>
-
+                    <p><b>Report 5:</b> Highest Debt Owed</p>
                     {/* Report table */}
                     {renderFeeReport5()}
 

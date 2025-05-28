@@ -273,6 +273,23 @@ export async function getHighestDebt() {
     return result;
 }
 
+export async function getLatePayments() {
+    const [result] = await pool.query(
+        `SELECT f.*, CONCAT(s.fname, ' ', s.lname) as student_name, o.org_name,
+        CASE
+            WHEN f.payment_date > CAST(CONCAT(YEAR(f.payment_date), '-05-31') AS DATE) THEN '2nd Semester'
+            ELSE '1st Semester'
+        END AS semester,
+        CASE
+            WHEN f.payment_date > CAST(CONCAT(YEAR(f.payment_date), '-05-31') AS DATE) THEN CONCAT(YEAR(f.payment_date), ' - ', YEAR(f.payment_date) + 1)
+            ELSE CONCAT(YEAR(f.payment_date) - 1, ' - ', YEAR(f.payment_date))
+        END AS academic_year
+        FROM fee AS f JOIN student AS s ON f.student_id = s.student_id JOIN org AS o ON f.org_id = o.org_id
+        WHERE f.payment_date > f.deadline_date ORDER BY f.org_id;`
+    );
+    return result;
+}
+
 // services/orgService.js
 export async function getPercentage() {
     const [result] = await pool.query(
@@ -328,5 +345,6 @@ export default {
     getFeesByStudentId,
     getPaidUnpaid,
     getHighestDebt,
-    getPendingFees
+    getPendingFees,
+    getLatePayments
 };
