@@ -231,6 +231,18 @@ app.put("/fee-edit", async (req, res) => {
     }
 });
 
+app.get("/fees-pending", async (req, res) => {
+    try {
+        const result = await orgService.getPendingFees();
+        console.log('Pending fees result:', result);  
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to fetch pending fees." });
+    }
+});
+
+
 // server
 
 app.use((err, req, res, next) => {

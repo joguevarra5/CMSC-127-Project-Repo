@@ -277,7 +277,11 @@ function MembersPage() {
                             </button>
                             <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
                                 onClick={() => navigate('/reports')}>
-                                View Reports
+                                View Member Reports
+                            </button>
+                            <button
+                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 " onClick={() => navigate('/reports-fees')}>
+                                View Fee Reports
                             </button>
                         </div>
 
