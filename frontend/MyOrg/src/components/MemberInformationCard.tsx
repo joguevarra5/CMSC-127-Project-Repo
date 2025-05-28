@@ -8,16 +8,18 @@ interface Props {
 
 function MemberInformationCard({ row, onEdit, onDelete }: Props) {
     return (
-        <div className="w-1/4 h-100 mb-4 rounded-b-[25px] shadow-lg" style={{ minWidth: 0 }}>
+        <div className="w-1/4 h-110 mb-4 rounded-b-[25px] shadow-lg" style={{ minWidth: 0 }}>
             {/* name */}
             <div className="rounded-t-[25px] bg-[#7170f5] p-4 font-bold text-white text-center text-3l"> {row.student_name} </div>
 
             <div className="flex flex-col justify-between">
                 {/* text */}
-                <div className="p-4 h-70">
+                <div className="p-4 h-80">
                     <center> <b> Information </b> </center>
+                    <p> <b> Student Number: </b> {row.student_id} </p>
                     <p> <b> Affiliation: </b> {row.org_name} </p>
                     <p> <b> Role: </b> {row.role == null || row.role == "" ? "Member" : row.role} </p>
+                    <p> <b> Assignment Date: </b> {row.assignment_date == null || row.assignment_date == "" ? "N/A" : row.assignment_date} </p>
                     <p> <b> Status: </b> {row.status} </p>
                     <p> <b> Gender: </b> {row.gender} </p>
                     <p> <b> Degree Program: </b> {row.degprog} </p>

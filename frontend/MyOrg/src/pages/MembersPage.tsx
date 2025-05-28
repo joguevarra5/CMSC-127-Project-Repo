@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import MemberInformationCard from '../components/MemberInformationCard';
+import EditMemberModal from '../components/EditMemberModal';
+import AddMemberModal from '../components/AddMemberModal';
+import DeleteConfirmationModal from '../components/DeleteMemberModal';
+
 
 function Main() {
     const [originalData, setOriginalData] = useState<any[]>([]);
@@ -12,6 +16,13 @@ function Main() {
     const [selectedDegProg, setSelectedDegProg] = useState('');
     const [selectedBatch, setSelectedBatch] = useState('');
     const [selectedCommittee, setSelectedCommittee] = useState('');
+
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editRow, setEditRow] = useState<any | null>(null);
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedRowToDelete, setSelectedRowToDelete] = useState<any | null>(null);
+
 
     useEffect(() => {
         fetchMembers(selectedOrg);
@@ -38,7 +49,7 @@ function Main() {
     useEffect(() => {
         let filtered = [...originalData];
         if (selectedRole) {
-            filtered = filtered.filter(member => member.position?.toLowerCase() === selectedRole.toLowerCase());
+            filtered = filtered.filter(member => member.role?.toLowerCase() === selectedRole.toLowerCase());
         }
         if (selectedStatus) {
             filtered = filtered.filter(member => member.status?.toLowerCase() === selectedStatus.toLowerCase());
@@ -60,14 +71,13 @@ function Main() {
 
 
 
-    const handleEdit = async (row: any) => {
-        const updatedRow = {
-            ...row,
-            position: prompt("Edit position", row.position) || row.position,
-            assignment_date: prompt("Edit assignment date (YYYY-MM-DD)", row.assignment_date) || row.assignment_date,
-        };
+    const handleEdit = (row: any) => {
+        setEditRow(row);
+        setEditModalOpen(true);
+    };
 
-        if (!updatedRow.org_id || !updatedRow.student_id) {
+    const saveEditedMember = async (updatedData: { position: string; assignment_date: string }) => {
+        if (!editRow?.org_id || !editRow?.student_id) {
             alert("Missing org_id or student_id. Cannot proceed with update.");
             return;
         }
@@ -79,10 +89,9 @@ function Main() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    position: updatedRow.position,
-                    assignment_date: updatedRow.assignment_date,
-                    org_id: updatedRow.org_id,
-                    student_id: updatedRow.student_id,
+                    ...updatedData,
+                    org_id: editRow.org_id,
+                    student_id: editRow.student_id,
                 }),
             });
 
@@ -96,18 +105,23 @@ function Main() {
         } catch (error) {
             console.error("Edit error:", error);
             alert("Failed to edit member.");
+        } finally {
+            setEditModalOpen(false);
+            setEditRow(null);
         }
     };
 
-    const handleDelete = async (row: any) => {
+    const handleDelete = (row: any) => {
         if (!row.student_id) {
             alert("Missing student_id. Cannot proceed with delete.");
             return;
         }
+        setSelectedRowToDelete(row);
+        setDeleteModalOpen(true);
+    };
 
-        if (!window.confirm(`Are you sure you want to delete member with student_id: ${row.student_id}?`)) {
-            return;
-        }
+    const confirmDelete = async () => {
+        if (!selectedRowToDelete) return;
 
         try {
             const response = await fetch('http://localhost:8080/member-delete', {
@@ -115,7 +129,10 @@ function Main() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ org_id: row.org_id, student_id: row.student_id }),
+                body: JSON.stringify({
+                    org_id: selectedRowToDelete.org_id,
+                    student_id: selectedRowToDelete.student_id
+                }),
             });
 
             const result = await response.json();
@@ -129,38 +146,32 @@ function Main() {
         } catch (error) {
             console.error("Delete error:", error);
             alert("Failed to delete member.");
+        } finally {
+            setDeleteModalOpen(false);
+            setSelectedRowToDelete(null);
         }
     };
 
-    const handleAdd = async () => {
-        const org_id = prompt("Enter org_id:");
-        const student_id = prompt("Enter student_id:");
-        const join_date = prompt("Enter join date (YYYY-MM-DD):");
-        const status = prompt("Enter status (e.g. active/inactive):");
-        const position = prompt("Enter position:");
-        const assignment_date = prompt("Enter assignment date (YYYY-MM-DD):");
-        const committee = prompt("Enter committee (or leave blank):");
+    const handleAdd = () => {
+        setAddModalOpen(true);
+    };
 
-        if (!org_id || !student_id || !join_date || !status || !position || !assignment_date) {
-            alert("All fields except committee are required.");
-            return;
-        }
-
+    const saveNewMember = async (data: {
+        org_id: string;
+        student_id: string;
+        join_date: string;
+        status: string;
+        position: string;
+        assignment_date: string;
+        committee?: string;
+    }) => {
         try {
             const response = await fetch('http://localhost:8080/member-add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    org_id: org_id,
-                    student_id: student_id,
-                    join_date: join_date,
-                    status: status,
-                    position: position,
-                    assignment_date: assignment_date,
-                    committee: committee,
-                })
+                body: JSON.stringify(data),
             });
 
             const result = await response.json();
@@ -174,6 +185,8 @@ function Main() {
         } catch (error) {
             console.error("Add error:", error);
             alert("Failed to add member.");
+        } finally {
+            setAddModalOpen(false);
         }
     };
 
@@ -262,7 +275,7 @@ function Main() {
                             placeholder="Committee"
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
                             value={selectedCommittee}
-                            onChange={(e) => setSelectedDegProg(e.target.value)} />
+                            onChange={(e) => setSelectedCommittee(e.target.value)} />
                     </div>
                 </div>
 
@@ -280,6 +293,36 @@ function Main() {
                     ))}
                 </div>
             </div >
+
+            {editModalOpen && editRow && (
+                <EditMemberModal
+                    isOpen={editModalOpen}
+                    onClose={() => setEditModalOpen(false)}
+                    onSave={saveEditedMember}
+                    initialData={{
+                        position: editRow.position,
+                        assignment_date: editRow.assignment_date,
+                    }}
+                />
+            )}
+
+            {addModalOpen && (
+                <AddMemberModal
+                    isOpen={addModalOpen}
+                    onClose={() => setAddModalOpen(false)}
+                    onSave={saveNewMember}
+                />
+            )}
+
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                studentId={selectedRowToDelete?.student_id || ''}
+                onConfirm={confirmDelete}
+                onCancel={() => {
+                    setDeleteModalOpen(false);
+                    setSelectedRowToDelete(null);
+                }}
+            />
         </div >
     );
 }

@@ -10,7 +10,7 @@ export default function AddOrgModal({ onCancel, onSave }) {
 
     return (
         <div className="fixed inset-0 flex justify-center items-center z-50">
-            <div className="bg-white border-2 border-[#f0f0f0] rounded-lg p-6 w-96">
+            <div className="bg-white rounded-md shadow-md p-6 w-96">
                 <h2 className="text-xl font-bold mb-4">Add New Organization</h2>
 
                 <label className="block mb-2">

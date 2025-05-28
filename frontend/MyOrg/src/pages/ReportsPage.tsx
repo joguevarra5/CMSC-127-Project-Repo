@@ -29,7 +29,7 @@ function Main() {
     return (
         <div className="bg-[#7170f5] min-h-screen flex justify-end p-4">
             <Sidebar onOrgSelect={setSelectedOrg} />
-            
+
         </div>
     );
 }
