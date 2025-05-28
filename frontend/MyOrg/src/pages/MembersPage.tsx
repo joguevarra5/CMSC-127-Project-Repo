@@ -3,8 +3,15 @@ import Sidebar from '../components/Sidebar'
 import MemberInformationCard from '../components/MemberInformationCard';
 
 function Main() {
-    const [data, setData] = useState<any[]>([]);
+    const [originalData, setOriginalData] = useState<any[]>([]);
+    const [filteredData, setFilteredData] = useState<any[]>([]);
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedGender, setSelectedGender] = useState('');
+    const [selectedDegProg, setSelectedDegProg] = useState('');
+    const [selectedBatch, setSelectedBatch] = useState('');
+    const [selectedCommittee, setSelectedCommittee] = useState('');
 
     useEffect(() => {
         fetchMembers(selectedOrg);
@@ -22,10 +29,36 @@ function Main() {
                     ...row,
                     id: index + 1,
                 }));
-                setData(dataWithIds);
+                setOriginalData(dataWithIds);
+                setFilteredData(dataWithIds);
             })
             .catch(err => console.error("Failed to fetch data:", err));
     };
+
+    useEffect(() => {
+        let filtered = [...originalData];
+        if (selectedRole) {
+            filtered = filtered.filter(member => member.position?.toLowerCase() === selectedRole.toLowerCase());
+        }
+        if (selectedStatus) {
+            filtered = filtered.filter(member => member.status?.toLowerCase() === selectedStatus.toLowerCase());
+        }
+        if (selectedGender) {
+            filtered = filtered.filter(member => member.gender?.toLowerCase() === selectedGender.toLowerCase());
+        }
+        if (selectedDegProg) {
+            filtered = filtered.filter(member => member.degprog?.toLowerCase() === selectedDegProg.toLowerCase());
+        }
+        if (selectedBatch) {
+            filtered = filtered.filter(member => member.batch?.toLowerCase() === selectedBatch.toLowerCase());
+        }
+        if (selectedCommittee) {
+            filtered = filtered.filter(member => member.committee?.toLowerCase() === selectedCommittee.toLowerCase());
+        }
+        setFilteredData(filtered);
+    }, [originalData, selectedRole, selectedStatus, selectedGender]);
+
+
 
     const handleEdit = async (row: any) => {
         const updatedRow = {
@@ -185,40 +218,51 @@ function Main() {
                     </div>
 
                     {/* Bottom row: Filters */}
-                    {/* Bottom row: Filters */}
                     <div className="flex items-center space-x-3 pl-4 w-full">
                         <p className="text-lg">Filters:</p>
 
-                        <input
-                            type="text"
-                            placeholder="Role"
-                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Status"
-                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Gender"
-                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                        />
+                        <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]">
+                            <option value="">Select Role</option>
+                            <option value="president">President</option>
+                            <option value="executive">Executive</option>
+                            <option value="publicRelations">Public Relations</option>
+                        </select>
+
+                        <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]">
+                            <option value="">Select Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="alumni">Alumni</option>
+                            <option value="inactive">Suspended</option>
+                            <option value="alumni">Expelled</option>
+                        </select>
+
+                        <select value={selectedGender} onChange={(e) => setSelectedGender(e.target.value)} className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+
                         <input
                             type="text"
                             placeholder="Degree Program"
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                        />
+                            value={selectedDegProg}
+                            onChange={(e) => setSelectedDegProg(e.target.value)} />
+
                         <input
                             type="text"
                             placeholder="Batch"
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                        />
+                            value={selectedBatch}
+                            onChange={(e) => setSelectedBatch(e.target.value)} />
+
                         <input
                             type="text"
                             placeholder="Committee"
                             className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
-                        />
+                            value={selectedCommittee}
+                            onChange={(e) => setSelectedDegProg(e.target.value)} />
                     </div>
                 </div>
 
@@ -226,7 +270,7 @@ function Main() {
 
                 {/* table display */}
                 <div className="flex flex-wrap items-center justify-center gap-4">
-                    {data.map((row, rowIndex) => (
+                    {filteredData.map((row, rowIndex) => (
                         <MemberInformationCard
                             key={row.id ?? rowIndex}
                             row={row}
@@ -235,7 +279,7 @@ function Main() {
                         />
                     ))}
                 </div>
-            </div>
+            </div >
         </div >
     );
 }
