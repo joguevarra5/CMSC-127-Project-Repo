@@ -1,5 +1,5 @@
 import express from "express";
-import orgService from './index.js';
+import orgService, { getMembersByOrgNameSorted } from './index.js';
 import cors from 'cors';
 
 const app = express();
@@ -59,6 +59,61 @@ app.get("/members/by-org", async (req, res) => {
     }
 });
 
+app.get("/members-filter-by", async (req, res) => {
+    const { role, status, gender, degprog, batch, committee, org_name } = req.query;
+
+    let query = `
+        SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, 
+               om.position AS role, om.status, s.student_id, s.gender, s.degprog, 
+               YEAR(om.join_date) AS batch, om.join_date, om.committee
+        FROM student AS s 
+        JOIN org_mem AS om ON s.student_id = om.student_id
+        JOIN org AS o ON om.org_id = o.org_id
+        WHERE 1 = 1
+    `;
+
+    const params = [];
+
+    if (org_name) {
+        query += ` AND o.org_name = ?`;
+        params.push(org_name);
+    }
+    if (role) {
+        query += ` AND om.position = ?`;
+        params.push(role);
+    }
+    if (status) {
+        query += ` AND om.status = ?`;
+        params.push(status);
+    }
+    if (gender) {
+        query += ` AND s.gender = ?`;
+        params.push(gender);
+    }
+    if (degprog) {
+        query += ` AND s.degprog = ?`;
+        params.push(degprog);
+    }
+    if (batch) {
+        query += ` AND YEAR(om.join_date) = ?`;
+        params.push(batch);
+    }
+    if (committee) {
+        query += ` AND om.committee = ?`;
+        params.push(committee);
+    }
+
+    query += ` ORDER BY o.org_id`;
+
+    try {
+        const [result] = await pool.query(query, params);
+        res.send(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: "Failed to fetch members." });
+    }
+});
+
 app.put('/member-edit', async (req, res) => {
     try {
         const { position, assignment_date, org_id, student_id } = req.body;
@@ -68,7 +123,7 @@ app.put('/member-edit', async (req, res) => {
         console.error(error);
         res.status(500).send({ message: 'Failed to edit member.' });
     }
-}); // TODO: find out why it's not updating on the database side.
+});
 
 app.delete('/member-delete', async (req, res) => {
     try {
@@ -85,10 +140,24 @@ app.post('/member-add', async (req, res) => {
     try {
         const { org_id, student_id, join_date, status, position, assignment_date, committee } = req.body;
         await orgService.addMember(org_id, student_id, join_date, status, position, assignment_date, committee);
-        res.status(200).send({ message: 'Added member successfully.' });
+        res.send(result).status(200);
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Failed to add member.' });
+    }
+});
+
+// reports
+
+app.get('/member-executives', async (req, res) => {
+    const { start, end } = req.query;
+
+    try {
+        const result = await orgService.getExecutiveMembers(start, end);
+        res.status(200).send({ message: 'Fetched executive members successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to fetch executive members.' });
     }
 });
 

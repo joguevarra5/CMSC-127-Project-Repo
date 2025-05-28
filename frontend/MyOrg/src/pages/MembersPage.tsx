@@ -73,7 +73,7 @@ function Main() {
         }
 
         if (!window.confirm(`Are you sure you want to delete member with student_id: ${row.student_id}?`)) {
-            return; // User cancelled
+            return;
         }
 
         try {
@@ -153,28 +153,72 @@ function Main() {
                 <p className="text-4xl font-bold"> Manage Database </p>
 
                 {/* options */}
-                <div className="flex items-center justify-between p-4">
-                    <div className="flex items-center space-x-4">
-                        <p className="text-2xl">Reports:</p>
-                        <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            View Members
-                        </button>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            View Fees
-                        </button>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            View Students
-                        </button>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            View Reports
-                        </button>
+                <div className="flex flex-col items-start justify-start w-full">
+                    {/* Top row: Reports + Add Member */}
+                    <div className="flex items-center justify-between w-full p-4">
+                        <div className="flex items-center space-x-4">
+                            <p className="text-2xl">Reports:</p>
+                            <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                onClick={() => { }}>
+                                View Members
+                            </button>
+                            <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                onClick={() => { }}>
+                                View Fees
+                            </button>
+                            <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                onClick={() => { }}>
+                                View Students
+                            </button>
+                            <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                                onClick={() => { }}>
+                                View Reports
+                            </button>
+                        </div>
+
+                        <div className="flex items-center space-x-4">
+                            <button className="bg-[#a594f9] h-14 px-6 rounded-[25px] text-white text-2xl"
+                                onClick={handleAdd}>
+                                + Add Member
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="flex items-center space-x-4">
-                        <button className="bg-[#a594f9] h-14 w-47 rounded-[25px] text-white mr-10 text-2xl"
-                            onClick={handleAdd}>
-                            + Add Member
-                        </button>
+                    {/* Bottom row: Filters */}
+                    {/* Bottom row: Filters */}
+                    <div className="flex items-center space-x-3 pl-4 w-full">
+                        <p className="text-lg">Filters:</p>
+
+                        <input
+                            type="text"
+                            placeholder="Role"
+                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Status"
+                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Gender"
+                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Degree Program"
+                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Batch"
+                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Committee"
+                            className="bg-[#f0f0f0] px-3 h-8 rounded-[20px] text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#a594f9]"
+                        />
                     </div>
                 </div>
 
@@ -192,7 +236,7 @@ function Main() {
                     ))}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
