@@ -50,7 +50,7 @@ app.get("/members/by-org", async (req, res) => {
     try {
         const result = org_name
             ? await orgService.getMembersByOrgName(org_name)
-            : await orgService.getMembersByOrg(); // fallback to all members
+            : await orgService.getMembersByOrg();
 
         res.send(result);
     } catch (err) {
@@ -59,17 +59,38 @@ app.get("/members/by-org", async (req, res) => {
     }
 });
 
+app.put('/member-edit', async (req, res) => {
+    try {
+        const { position, assignment_date, org_id, student_id } = req.body;
+        await orgService.editMember(position, assignment_date, org_id, student_id);
+        res.status(200).send({ message: 'Edited member successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to edit member.' });
+    }
+}); // TODO: find out why it's not updating on the database side.
+
+app.delete('/member-delete', async (req, res) => {
+    try {
+        const { org_id, student_id } = req.body;
+        await orgService.deleteMember(org_id, student_id);
+        res.status(200).send({ message: 'Deleted member successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to delete member.' });
+    }
+});
+
 app.post('/member-add', async (req, res) => {
     try {
-        const member = req.body;
-        await orgService.addMember(member);
-        res.status(201).send({ message: 'Member added successfully.' });
+        const { org_id, student_id, join_date, status, position, assignment_date, committee } = req.body;
+        await orgService.addMember(org_id, student_id, join_date, status, position, assignment_date, committee);
+        res.status(200).send({ message: 'Added member successfully.' });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Failed to add member.' });
     }
 });
-
 
 // server
 
