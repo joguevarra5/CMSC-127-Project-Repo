@@ -234,20 +234,20 @@ export async function getRoles(position) {
     return result;
 }
 
+// services/orgService.js
 export async function getPercentage() {
     const [result] = await pool.query(
-        `SELECT (
-        SELECT COUNT(*)
-        FROM org_mem
-        WHERE status = "Active"
-        ) / (
-        SELECT COUNT(*)
-        FROM org_mem
-        WHERE status = "Inactive"
-        ) AS "active_inactive_percentage"`
+        `SELECT 
+            o.org_name,
+            SUM(om.status = 'Active') AS active_count,
+            SUM(om.status = 'Inactive') AS inactive_count,
+            (SUM(om.status = 'Active') / NULLIF(SUM(om.status = 'Inactive'), 0)) AS active_inactive_ratio
+        FROM org_mem as om JOIN org as o ON om.org_id = o.org_id
+        GROUP BY o.org_name`
     );
-    return result;
+    return result; // <-- result is an array
 }
+
 
 export async function getAlumni(date) {
     const [result] = await pool.query(

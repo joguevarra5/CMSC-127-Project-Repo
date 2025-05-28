@@ -161,6 +161,16 @@ app.get('/member-alumni', async (req, res) => {
     }
 });
 
+app.get('/inactive-active', async (req, res) => {
+    try {
+        const result = await orgService.getPercentage();
+        res.status(200).send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to fetch alumni members.' });
+    }
+});
+
 // fee endpoints
 
 app.get("/fees", async (req, res) => {
