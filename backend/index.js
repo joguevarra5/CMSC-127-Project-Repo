@@ -35,7 +35,8 @@ export async function updateOrg(newName, newClassification, org_id) {
 
 export async function getMembersByOrg() {
     const [result] = await pool.query(
-        `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status, s.student_id, s.gender, s.degprog, om.join_date, om.committee
+        `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status,
+        s.student_id, s.gender, s.degprog, YEAR(om.join_date) AS batch, om.join_date, om.committee
         FROM student AS s JOIN org_mem AS om ON s.student_id = om.student_id
         JOIN org AS o ON om.org_id = o.org_id ORDER BY o.org_id;`
     );
@@ -44,7 +45,8 @@ export async function getMembersByOrg() {
 
 export async function getMembersByOrgName(orgName) {
     const [result] = await pool.query(
-        `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status, s.student_id, s.gender, s.degprog, om.join_date, om.committee
+        `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status,
+        s.student_id, s.gender, s.degprog, YEAR(om.join_date) AS batch, om.committee
          FROM student AS s 
          JOIN org_mem AS om ON s.student_id = om.student_id
          JOIN org AS o ON om.org_id = o.org_id
@@ -95,16 +97,6 @@ export async function addMember(org_id, student_id, join_date, status, position,
 // fee functions
 
 // student functions
-
-export async function getPendingFees() {
-
-}
-
-// extra functions
-
-export async function getFields() {
-
-}
 
 export default {
     getOrgs,

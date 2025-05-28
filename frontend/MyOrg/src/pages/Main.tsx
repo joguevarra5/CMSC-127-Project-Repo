@@ -163,6 +163,9 @@ function Main() {
                             View Fees
                         </button>
                         <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
+                            View Students
+                        </button>
+                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
                             View Reports
                         </button>
                     </div>
@@ -178,7 +181,7 @@ function Main() {
                 <br />
 
                 {/* table display */}
-                <div className="flex flex-wrap items-center justify-start gap-4">
+                <div className="flex flex-wrap items-center justify-center gap-4">
                     {data.map((row, rowIndex) => (
                         <MemberInformationCard
                             key={row.id ?? rowIndex}
