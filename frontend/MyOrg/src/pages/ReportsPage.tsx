@@ -220,8 +220,12 @@ function ReportsPage() {
                                 View Fees
                             </button>
                             <button
-                                className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition">
-                                View Reports
+                                className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition ">
+                                View Member Reports
+                            </button>
+                            <button
+                                className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 " onClick={() => navigate('/reports-fees')}>
+                                View Fee Reports
                             </button>
                         </div>
                     </div>

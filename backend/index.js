@@ -175,6 +175,19 @@ export async function editFee(payment_date, payment_status, org_id, student_id) 
     return result;
 }
 
+export async function getPendingFees() {
+    const [result] = await pool.query(
+        `SELECT f.transaction_id, f.deadline_date, f.payment_date, f.payment_status, f.amount,
+                s.student_id, o.org_name, f.org_id
+         FROM fee AS f
+         JOIN student AS s ON f.student_id = s.student_id
+         JOIN org AS o ON f.org_id = o.org_id
+         WHERE f.payment_status = 'Pending'
+         ORDER BY f.deadline_date DESC`
+    );
+    return result;
+}
+
 // student functions
 
 export async function getStudents() {
