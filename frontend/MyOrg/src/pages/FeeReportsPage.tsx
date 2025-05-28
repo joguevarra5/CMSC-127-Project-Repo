@@ -144,8 +144,8 @@ function FeeReportsPage() {
                 <tbody>
                     {debts.map((fee, index) => (
                         <tr key={index} className="text-center">
-                            <td className="p-2 border">{fee.student_id ?? 'NULL'}</td>
-                            <td className="p-2 border">{(fee.org_id)}</td>
+                            <td className="p-2 border">{fee.student_name ?? 'NULL'}</td>
+                            <td className="p-2 border">{(fee.org_name)}</td>
                             <td className="p-2 border">{(fee.max_sum_per_student)}</td>
                         </tr>
                     ))}

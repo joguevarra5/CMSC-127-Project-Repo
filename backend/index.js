@@ -261,13 +261,14 @@ export async function getPaidUnpaid() {
 
 export async function getHighestDebt() {
     const [result] = await pool.query(
-        `SELECT org_id, MAX(total_amount) AS max_sum_per_student
-        FROM (
-            SELECT org_id, student_id, SUM(amount) AS total_amount
-            FROM fee
-            GROUP BY org_id, student_id
-        ) AS sub
-        GROUP BY org_id`
+        `SELECT o.org_id, o.org_name,
+        CONCAT(st.fname, ' ', st.lname) AS student_name,
+        MAX(s.total_amount) AS max_sum_per_student
+        FROM (SELECT org_id, student_id, SUM(amount) AS total_amount
+        FROM fee GROUP BY org_id, student_id
+        ) AS s JOIN org AS o ON s.org_id = o.org_id
+        JOIN student AS st ON s.student_id = st.student_id
+        GROUP BY o.org_id, o.org_name, student_name;`
     );
     return result;
 }
