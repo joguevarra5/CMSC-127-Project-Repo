@@ -247,6 +247,31 @@ export async function getRoles(position) {
     return result;
 }
 
+
+export async function getPaidUnpaid() {
+    const [result] = await pool.query(
+        `SELECT o.org_name,
+        SUM(CASE WHEN f.payment_status = 'Pending' THEN amount ELSE 0 END) AS pending,
+        SUM(CASE WHEN f.payment_status = 'Paid' THEN amount ELSE 0 END) AS paid
+        FROM fee AS f JOIN org AS o ON f.org_id = o.org_id
+        GROUP BY f.org_id;`
+    );
+    return result;
+}
+
+export async function getHighestDebt() {
+    const [result] = await pool.query(
+        `SELECT org_id, MAX(total_amount) AS max_sum_per_student
+        FROM (
+            SELECT org_id, student_id, SUM(amount) AS total_amount
+            FROM fee
+            GROUP BY org_id, student_id
+        ) AS sub
+        GROUP BY org_id`
+    );
+    return result;
+}
+
 // services/orgService.js
 export async function getPercentage() {
     const [result] = await pool.query(
@@ -258,7 +283,7 @@ export async function getPercentage() {
         FROM org_mem as om JOIN org as o ON om.org_id = o.org_id
         GROUP BY o.org_name`
     );
-    return result; // <-- result is an array
+    return result;
 }
 
 
@@ -299,5 +324,8 @@ export default {
     editFee,
     getAllFees,
     getFeesByOrgName,
-    getFeesByStudentId
+    getFeesByStudentId,
+    getPaidUnpaid,
+    getHighestDebt,
+    getPendingFees
 };

@@ -171,6 +171,26 @@ app.get('/inactive-active', async (req, res) => {
     }
 });
 
+app.get('/paid-unpaid', async (req, res) => {
+    try {
+        const result = await orgService.getPaidUnpaid();
+        res.status(200).send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to fetch paid and unpaid fees.' });
+    }
+});
+
+app.get('/highest-debt', async (req, res) => {
+    try {
+        const result = await orgService.getHighestDebt();
+        res.status(200).send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Failed to fetch highest debt.' });
+    }
+});
+
 // fee endpoints
 
 app.get("/fees", async (req, res) => {
@@ -245,7 +265,7 @@ app.put("/fee-edit", async (req, res) => {
 app.get("/fees-pending", async (req, res) => {
     try {
         const result = await orgService.getPendingFees();
-        console.log('Pending fees result:', result);  
+        console.log('Pending fees result:', result);
         res.send(result);
     } catch (error) {
         console.error(error);

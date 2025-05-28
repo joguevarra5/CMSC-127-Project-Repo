@@ -5,7 +5,7 @@ import FeeModal from '../components/FeeModal';
 
 function Fees() {
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
-    const [fees, setFees] = useState<any[]>([]);    
+    const [fees, setFees] = useState<any[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingFee, setEditingFee] = useState<any>(null);
 
@@ -117,19 +117,19 @@ function Fees() {
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center space-x-4">
                         <p className="text-2xl">Reports:</p>
-                        <button className="bg-[#f0f0f0] px-6 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                        <button className="bg-[#f0f0f0] px-6 h-10 rounded-[25px] hover:bg-gray-300 transition"
                             onClick={() => navigate('/')}>
                             View Members
                         </button>
-                        <button className="bg-[#7170f5] px-5 h-10 text-2xl rounded-[25px] text-white transition">
+                        <button className="bg-[#7170f5] px-5 h-10 rounded-[25px] text-white transition">
                             View Fees
                         </button>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition"
+                        <button className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 transition"
                             onClick={() => navigate('/reports')}>
                             View Member Reports
                         </button>
                         <button
-                            className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 " onClick={() => navigate('/reports-fees')}>
+                            className="bg-[#f0f0f0] px-5 h-10 rounded-[25px] hover:bg-gray-300 " onClick={() => navigate('/reports-fees')}>
                             View Fee Reports
                         </button>
                     </div>
