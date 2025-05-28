@@ -1,10 +1,10 @@
 import './App.css';
-import Main from './pages/Main';
+import MembersPage from './pages/MembersPage';
 
 const App = () => {
   return (
     <div>
-      <Main></Main>
+      <MembersPage></MembersPage>
     </div>
   )
 };

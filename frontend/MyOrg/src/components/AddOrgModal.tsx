@@ -36,15 +36,13 @@ export default function AddOrgModal({ onCancel, onSave }) {
                 <div className="flex justify-end space-x-4">
                     <button
                         onClick={onCancel}
-                        className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-                    >
+                        className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                        disabled={!orgName.trim() || !classification.trim()}
-                    >
+                        className="px-4 py-2 rounded bg-[#7170f5] text-white hover:bg-[#a594f9]"
+                        disabled={!orgName.trim() || !classification.trim()}>
                         Save
                     </button>
                 </div>

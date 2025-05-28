@@ -171,9 +171,9 @@ function Main() {
                     </div>
 
                     <div className="flex items-center space-x-4">
-                        <p className="text-2xl">Filter: </p>
-                        <button className="bg-[#f0f0f0] px-5 h-10 text-2xl rounded-[25px] hover:bg-gray-300 transition">
-                            Imagine Dropdown
+                        <button className="bg-[#a594f9] h-14 w-47 rounded-[25px] text-white mr-10 text-2xl"
+                            onClick={handleAdd}>
+                            + Add Member
                         </button>
                     </div>
                 </div>
@@ -190,13 +190,6 @@ function Main() {
                             onDelete={handleDelete}
                         />
                     ))}
-                </div>
-
-                <div className="flex items-center justify-end mt-8">
-                    <button className="bg-[#a594f9] h-14 w-45 rounded-[25px] text-white mr-10 text-2xl"
-                        onClick={handleAdd}>
-                        Add Member
-                    </button>
                 </div>
             </div>
         </div>

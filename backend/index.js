@@ -46,12 +46,12 @@ export async function getMembersByOrg() {
 export async function getMembersByOrgName(orgName) {
     const [result] = await pool.query(
         `SELECT o.org_name, om.org_id, CONCAT(s.fname, ' ', s.lname) AS student_name, om.position, om.status,
-        s.student_id, s.gender, s.degprog, YEAR(om.join_date) AS batch, om.committee
-         FROM student AS s 
-         JOIN org_mem AS om ON s.student_id = om.student_id
-         JOIN org AS o ON om.org_id = o.org_id
-         WHERE o.org_name = ?
-         ORDER BY o.org_id`,
+        s.student_id, s.gender, s.degprog, YEAR(om.join_date) AS batch, om.join_date, om.committee
+        FROM student AS s 
+        JOIN org_mem AS om ON s.student_id = om.student_id
+        JOIN org AS o ON om.org_id = o.org_id
+        WHERE o.org_name = ?
+        ORDER BY o.org_id`,
         [orgName]
     );
     return result;
