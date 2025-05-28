@@ -162,7 +162,7 @@ export async function addFee(transaction_id, deadline_date, payment_date, paymen
 
 export async function editFee(payment_date, payment_status, org_id, student_id) {
     const [result] = await pool.query(
-        `UPDATE org_mem
+        `UPDATE fee
          SET payment_date = ?, payment_status = ?
          WHERE org_id = ? AND student_id = ?`,
         [payment_date, payment_status, org_id, student_id]

@@ -1,10 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar2';
+import FeeModal from '../components/FeeModal';
 
 function Fees() {
     const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
-    const [fees, setFees] = useState<any[]>([]);
+    const [fees, setFees] = useState<any[]>([]);    
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingFee, setEditingFee] = useState<any>(null);
+
+    const handleAddFee = () => {
+        setEditingFee(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEditFee = (fee: any) => {
+        setEditingFee(fee);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmitFee = async (feeData: any) => {
+        const endpoint = feeData.transaction_id ? 'fee-edit' : 'fee-add';
+        const method = feeData.transaction_id ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(`http://localhost:8080/${endpoint}`, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(feeData),
+            });
+
+            if (res.ok) {
+                fetchFees();
+            } else {
+                console.error('Failed to submit fee.');
+            }
+        } catch (err) {
+            console.error('Error submitting fee:', err);
+        }
+    };
 
     const navigate = useNavigate();
 
@@ -45,6 +79,7 @@ function Fees() {
                         <th className="p-2 border">Amount</th>
                         <th className="p-2 border">Student ID</th>
                         <th className="p-2 border">Org ID</th>
+                        <th className="p-2 border">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,6 +92,13 @@ function Fees() {
                             <td className="p-2 border">{fee.amount ?? 'NULL'}</td>
                             <td className="p-2 border">{fee.student_id ?? 'NULL'}</td>
                             <td className="p-2 border">{fee.org_id ?? 'NULL'}</td>
+                            <td className="p-2 border">
+                                <button
+                                    onClick={() => handleEditFee(fee)}
+                                    className="bg-[#a594f9] text-white px-3 py-1 rounded-full hover:bg-[#8d7cf3] transition">
+                                    Edit
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -94,8 +136,19 @@ function Fees() {
                         {selectedOrg ? `Fees for ${selectedOrg}` : 'All Organization Fees'}
                     </h2>
                     {renderTable(fees)}
+                    <button
+                        className="bg-[#a594f9] text-white px-4 py-2 rounded-full hover:bg-[#8d7cf3] transition mt-4"
+                        onClick={handleAddFee}>
+                        Add Fee
+                    </button>
                 </div>
             </div>
+            <FeeModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleSubmitFee}
+                initialData={editingFee}
+            />
         </div>
     );
 }
