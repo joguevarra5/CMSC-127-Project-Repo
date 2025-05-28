@@ -10,7 +10,7 @@ export default function AddOrgModal({ onCancel, onSave }) {
 
     return (
         <div className="fixed inset-0 flex justify-center items-center z-50">
-            <div className="bg-white border-2 border-[#f0f0f0] rounded-lg p-6 w-96">
+            <div className="bg-white rounded-md shadow-md p-6 w-96">
                 <h2 className="text-xl font-bold mb-4">Add New Organization</h2>
 
                 <label className="block mb-2">
@@ -36,15 +36,13 @@ export default function AddOrgModal({ onCancel, onSave }) {
                 <div className="flex justify-end space-x-4">
                     <button
                         onClick={onCancel}
-                        className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-                    >
+                        className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                        disabled={!orgName.trim() || !classification.trim()}
-                    >
+                        className="px-4 py-2 rounded bg-[#7170f5] text-white hover:bg-[#a594f9]"
+                        disabled={!orgName.trim() || !classification.trim()}>
                         Save
                     </button>
                 </div>
